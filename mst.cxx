@@ -12,7 +12,7 @@ int main(int argc, char *argv[]) {
                      std::istreambuf_iterator<char>{} };
     mstch::map ctx{};
 
-    for(int i=2; i<argc; i+=2) {
+    for(int i=2; i+1<argc; i+=2) {
         ctx.emplace(std::make_pair(std::string(argv[i]), std::string(argv[i+1])));
     }
 
