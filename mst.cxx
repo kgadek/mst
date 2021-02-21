@@ -4,6 +4,7 @@
 #include <string>
 #include <utility>
 #include <map>
+#include <cstdio>
 #include <mstch/mstch.hpp>
 
 int main(int argc, char *argv[]) {
@@ -15,6 +16,13 @@ int main(int argc, char *argv[]) {
             std::ifstream file_fstream{ filename };
             return std::string { std::istreambuf_iterator<char>{ file_fstream },
                                  std::istreambuf_iterator<char>{} };
+        }}},
+        {"env", mstch::lambda{ [](const std::string &env_var_name) -> mstch::node {
+            if(char *env_var_value = std::getenv(env_var_name.c_str())) {
+                return std::string{env_var_value};
+            } else {
+                return std::string{};
+            }
         }}}
     };
 
