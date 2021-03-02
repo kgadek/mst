@@ -8,6 +8,9 @@
 #include <mstch/mstch.hpp>
 
 int main(int argc, char *argv[]) {
+    mstch::config::escape = [](const std::string& str) -> std::string {
+        return str;
+    };
     std::ifstream tpl_fstream{ argv[1] };
     std::string tpl{ std::istreambuf_iterator<char>{ tpl_fstream },
                      std::istreambuf_iterator<char>{} };
