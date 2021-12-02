@@ -19,6 +19,8 @@ int main(int argc, char *argv[]) {
     mstch::map ctx{
         {"include", mstch::lambda{ [](const std::string &filename) -> mstch::node {
             std::ifstream file_fstream{ filename };
+            if((file_fstream.rdstate() & std::ifstream::failbit) != 0)
+                throw std::runtime_error("Can't open file: " + filename);
             return std::string { std::istreambuf_iterator<char>{ file_fstream },
                                  std::istreambuf_iterator<char>{} };
         }}},
@@ -26,7 +28,7 @@ int main(int argc, char *argv[]) {
             if(char *env_var_value = std::getenv(env_var_name.c_str())) {
                 return std::string{env_var_value};
             } else {
-                return std::string{};
+                throw std::runtime_error("Env var doesn't exist: " + env_var_name);
             }
         }}},
         {"cmd", mstch::lambda{ [](const std::string &cmd) -> mstch::node {
@@ -36,7 +38,7 @@ int main(int argc, char *argv[]) {
             std::string stdout;
             std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd.c_str(), "r"), pclose);
             if(!pipe)
-                return "Command \"" + cmd + "\" failed";
+                throw std::runtime_error("Command failed: " + cmd);
             while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr)
                 stdout += buffer.data();
             return stdout;
