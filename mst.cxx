@@ -31,13 +31,13 @@ int main(int argc, char *argv[]) {
         }}},
         {"cmd", mstch::lambda{ [](const std::string &cmd) -> mstch::node {
             // https://stackoverflow.com/a/478960/547223
-            std::array<char, 128> buffer;
+            std::array<char, 16384> buffer;  // 16 KiB
             buffer.fill('\0');
             std::string stdout;
             std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd.c_str(), "r"), pclose);
-            if(!pipe) return "Command \"" + cmd + "\" failed";
-            // while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr)
-            while (fread(buffer.data(), sizeof(char), buffer.size(), pipe.get()))
+            if(!pipe)
+                return "Command \"" + cmd + "\" failed";
+            while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr)
                 stdout += buffer.data();
             return stdout;
         }}}
