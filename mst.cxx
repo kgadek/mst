@@ -6,6 +6,8 @@
 #include <map>
 #include <cstdio>
 #include <mstch/mstch.hpp>
+#include <memory>
+#include <array>
 
 int main(int argc, char *argv[]) {
     mstch::config::escape = [](const std::string& str) -> std::string {
@@ -26,6 +28,18 @@ int main(int argc, char *argv[]) {
             } else {
                 return std::string{};
             }
+        }}},
+        {"cmd", mstch::lambda{ [](const std::string &cmd) -> mstch::node {
+            // https://stackoverflow.com/a/478960/547223
+            std::array<char, 128> buffer;
+            buffer.fill('\0');
+            std::string stdout;
+            std::unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd.c_str(), "r"), pclose);
+            if(!pipe) return "Command \"" + cmd + "\" failed";
+            // while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr)
+            while (fread(buffer.data(), sizeof(char), buffer.size(), pipe.get()))
+                stdout += buffer.data();
+            return stdout;
         }}}
     };
 
