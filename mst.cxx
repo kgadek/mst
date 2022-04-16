@@ -50,6 +50,9 @@ int main(int argc, char *argv[]) {
 
         std::cout << mstch::render(tpl, ctx);
     } catch (...) {
+        std::cerr << "Invocation:\n" << std::endl;
+        for(int i=0; i<argc; ++i)
+            std::cerr << "  '" << argv[i] << "'\n";
         std::cerr << boost::current_exception_diagnostic_information() << std::endl;
         return -1;
     }
