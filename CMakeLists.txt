@@ -13,6 +13,11 @@ include_directories(${Boost_INCLUDE_DIRS})
 add_subdirectory(mstch)
 include_directories(${mstch_INCLUDE_DIR})
 
+option(WITH_CMD "Allow running arbitrary commands via templates" ON)
+if(WITH_CMD)
+    add_definitions(-DMST_WITH_CMD)
+endif()
+
 set(CMAKE_CXX_CLANG_TIDY "clang-tidy;-format-style=file;-checks=*,-llvmlibc-restrict-system-libc-headers,-llvmlibc-implementation-in-namespace,-llvmlibc-callee-namespace,-fuchsia-default-arguments-calls,-modernize-use-trailing-return-type")
 add_executable(mst mst.cxx)
 target_link_libraries(mst mstch)

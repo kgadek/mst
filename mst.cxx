@@ -28,10 +28,7 @@ int main(int argc, char* argv[]) {
                         throw runtime_error("Can't open file: " + filename);
                       return string{istreambuf_iterator<char>{file_fstream}, istreambuf_iterator<char>{}};
                     }}},
-                   {"env", mstch::lambda{[](const string& env_var_name) -> mstch::node {
-                      if (char* env_var_value = getenv(env_var_name.c_str())) return string{env_var_value};
-                      throw runtime_error("Env var doesn't exist: " + env_var_name);
-                    }}},
+#ifdef MST_WITH_CMD
                    {"cmd", mstch::lambda{[](const string& cmd) -> mstch::node {
                       // https://stackoverflow.com/a/478960/547223
                       array<char, 16384> buffer;  // 16 KiB
@@ -41,6 +38,11 @@ int main(int argc, char* argv[]) {
                       if (!pipe) throw runtime_error("Command failed: " + cmd);
                       while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) stdout += buffer.data();
                       return stdout;
+                    }}},
+#endif
+                   {"env", mstch::lambda{[](const string& env_var_name) -> mstch::node {
+                      if (char* env_var_value = getenv(env_var_name.c_str())) return string{env_var_value};
+                      throw runtime_error("Env var doesn't exist: " + env_var_name);
                     }}}};
 
     for (int i = 2; i + 1 < argc; i += 2) ctx.emplace(make_pair(string(argv[i]), string(argv[i + 1])));
@@ -48,7 +50,7 @@ int main(int argc, char* argv[]) {
     cout << mstch::render(tpl, ctx);
   } catch (...) {
     cerr << "Invocation:\n" << endl;
-    for (int i = 0; i < argc; ++i) cerr << "  '" << argv[i] << "'\n";
+    for (int i = 0; i < argc; ++i) cerr << "  '" << argv[i] << "'" << endl;
     cerr << boost::current_exception_diagnostic_information() << endl;
     return -1;
   }
