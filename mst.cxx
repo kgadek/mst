@@ -15,6 +15,9 @@
 #include <mstch/mstch.hpp>
 #include <string>
 #include <utility>
+#ifdef MST_WITH_CMD
+#include "pstream.h"
+#endif
 
 int main(int argc, char* argv[]) {
   using namespace std;
@@ -31,16 +34,11 @@ int main(int argc, char* argv[]) {
                     }}},
 #ifdef MST_WITH_CMD
                    {"cmd", mstch::lambda{[](const string& cmd) -> mstch::node {
-                      // https://stackoverflow.com/a/478960/547223
-                      array<char, 16384> buffer;  // 16 KiB
-                      buffer.fill('\0');
-                      string stdout;
-                      unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd.c_str(), "r"), pclose);
-                      if (!pipe) {
-                        throw runtime_error("Command failed: " + cmd);
-                      }
-                      while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) {
-                        stdout += buffer.data();
+                      redi::ipstream cmd_stream(cmd);
+                      string stdout{istreambuf_iterator<char>{cmd_stream}, istreambuf_iterator<char>{}};
+                      cmd_stream.close();
+                      if (int exitcode = cmd_stream.rdbuf()->status(); cmd_stream.rdbuf()->exited() && exitcode != 0) {
+                        throw runtime_error("Exit status " + to_string(exitcode) + " of command: '" + cmd + "'");
                       }
                       return stdout;
                     }}},
