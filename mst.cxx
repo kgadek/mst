@@ -56,11 +56,10 @@ int main(int argc, char* argv[]) {
     cout << mstch::render(template_content, ctx);
     return 0;
   } catch (...) {
-    cerr << "Invocation:\n" << endl;
+    cerr << boost::current_exception_diagnostic_information() << endl << "Invocation:\n";
     for (int i = 0; i < argc; ++i) {
       cerr << "  '" << argv[i] << "'" << endl;
     }
-    cerr << boost::current_exception_diagnostic_information() << endl;
     return -1;
   }
 }
