@@ -20,12 +20,13 @@ int main(int argc, char* argv[]) {
   using namespace std;
   try {
     mstch::config::escape = [](const string& str) -> string { return str; };
-    ifstream tpl_fstream{argv[1]};
-    string tpl{istreambuf_iterator<char>{tpl_fstream}, istreambuf_iterator<char>{}};
+    ifstream template_file{argv[1]};
+    string template_content{istreambuf_iterator<char>{template_file}, istreambuf_iterator<char>{}};
     mstch::map ctx{{"include", mstch::lambda{[](const string& filename) -> mstch::node {
                       ifstream file_fstream{filename};
-                      if ((file_fstream.rdstate() & ifstream::failbit) != 0)
+                      if ((file_fstream.rdstate() & ifstream::failbit) != 0) {
                         throw runtime_error("Can't open file: " + filename);
+                      }
                       return string{istreambuf_iterator<char>{file_fstream}, istreambuf_iterator<char>{}};
                     }}},
 #ifdef MST_WITH_CMD
@@ -35,24 +36,33 @@ int main(int argc, char* argv[]) {
                       buffer.fill('\0');
                       string stdout;
                       unique_ptr<FILE, decltype(&pclose)> pipe(popen(cmd.c_str(), "r"), pclose);
-                      if (!pipe) throw runtime_error("Command failed: " + cmd);
-                      while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) stdout += buffer.data();
+                      if (!pipe) {
+                        throw runtime_error("Command failed: " + cmd);
+                      }
+                      while (fgets(buffer.data(), buffer.size(), pipe.get()) != nullptr) {
+                        stdout += buffer.data();
+                      }
                       return stdout;
                     }}},
 #endif
                    {"env", mstch::lambda{[](const string& env_var_name) -> mstch::node {
-                      if (char* env_var_value = getenv(env_var_name.c_str())) return string{env_var_value};
+                      if (char* env_var_value = getenv(env_var_name.c_str())) {
+                        return string{env_var_value};
+                      }
                       throw runtime_error("Env var doesn't exist: " + env_var_name);
                     }}}};
 
-    for (int i = 2; i + 1 < argc; i += 2) ctx.emplace(make_pair(string(argv[i]), string(argv[i + 1])));
-
-    cout << mstch::render(tpl, ctx);
+    for (int i = 2; i + 1 < argc; i += 2) {
+      ctx.emplace(make_pair(string(argv[i]), string(argv[i + 1])));
+    }
+    cout << mstch::render(template_content, ctx);
+    return 0;
   } catch (...) {
     cerr << "Invocation:\n" << endl;
-    for (int i = 0; i < argc; ++i) cerr << "  '" << argv[i] << "'" << endl;
+    for (int i = 0; i < argc; ++i) {
+      cerr << "  '" << argv[i] << "'" << endl;
+    }
     cerr << boost::current_exception_diagnostic_information() << endl;
     return -1;
   }
-  return 0;
 }
