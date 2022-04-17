@@ -25,30 +25,33 @@ int main(int argc, char* argv[]) {
     mstch::config::escape = [](const string& str) -> string { return str; };
     ifstream template_file{argv[1]};
     string template_content{istreambuf_iterator<char>{template_file}, istreambuf_iterator<char>{}};
-    mstch::map ctx{{"include", mstch::lambda{[](const string& filename) -> mstch::node {
-                      ifstream file_fstream{filename};
-                      if ((file_fstream.rdstate() & ifstream::failbit) != 0) {
-                        throw runtime_error("Can't open file: " + filename);
-                      }
-                      return string{istreambuf_iterator<char>{file_fstream}, istreambuf_iterator<char>{}};
-                    }}},
-#ifdef MST_WITH_CMD
-                   {"cmd", mstch::lambda{[](const string& cmd) -> mstch::node {
-                      redi::ipstream cmd_stream(cmd);
-                      string stdout{istreambuf_iterator<char>{cmd_stream}, istreambuf_iterator<char>{}};
-                      cmd_stream.close();
-                      if (int exitcode = cmd_stream.rdbuf()->status(); cmd_stream.rdbuf()->exited() && exitcode != 0) {
-                        throw runtime_error("Exit status " + to_string(exitcode) + " of command: '" + cmd + "'");
-                      }
-                      return stdout;
-                    }}},
+    mstch::map ctx{
+#ifdef MST_WITH_INCLUDE
+        {"include", mstch::lambda{[](const string& filename) -> mstch::node {
+           ifstream file_fstream{filename};
+           if ((file_fstream.rdstate() & ifstream::failbit) != 0) {
+             throw runtime_error("Can't open file: " + filename);
+           }
+           return string{istreambuf_iterator<char>{file_fstream}, istreambuf_iterator<char>{}};
+         }}},
 #endif
-                   {"env", mstch::lambda{[](const string& env_var_name) -> mstch::node {
-                      if (char* env_var_value = getenv(env_var_name.c_str())) {
-                        return string{env_var_value};
-                      }
-                      throw runtime_error("Env var doesn't exist: " + env_var_name);
-                    }}}};
+#ifdef MST_WITH_CMD
+        {"cmd", mstch::lambda{[](const string& cmd) -> mstch::node {
+           redi::ipstream cmd_stream(cmd);
+           string stdout{istreambuf_iterator<char>{cmd_stream}, istreambuf_iterator<char>{}};
+           cmd_stream.close();
+           if (int exitcode = cmd_stream.rdbuf()->status(); cmd_stream.rdbuf()->exited() && exitcode != 0) {
+             throw runtime_error("Exit status " + to_string(exitcode) + " of command: '" + cmd + "'");
+           }
+           return stdout;
+         }}},
+#endif
+        {"env", mstch::lambda{[](const string& env_var_name) -> mstch::node {
+           if (char* env_var_value = getenv(env_var_name.c_str())) {
+             return string{env_var_value};
+           }
+           throw runtime_error("Env var doesn't exist: " + env_var_name);
+         }}}};
 
     for (int i = 2; i + 1 < argc; i += 2) {
       ctx.emplace(make_pair(string(argv[i]), string(argv[i + 1])));

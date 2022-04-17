@@ -14,8 +14,12 @@ add_subdirectory(mstch)
 include_directories(${mstch_INCLUDE_DIR})
 
 option(WITH_CMD "Allow running arbitrary commands via templates" ON)
+option(WITH_INCLUDE "Allow including arbitrary files via templates" ON)
 if(WITH_CMD)
     add_definitions(-DMST_WITH_CMD)
+endif()
+if(WITH_INCLUDE)
+    add_definitions(-DMST_WITH_INCLUDE)
 endif()
 
 set(CMAKE_CXX_CLANG_TIDY "clang-tidy;-format-style=file;-checks=*,-llvmlibc-restrict-system-libc-headers,-llvmlibc-implementation-in-namespace,-llvmlibc-callee-namespace,-fuchsia-default-arguments-calls,-modernize-use-trailing-return-type")
