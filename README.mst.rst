@@ -1,7 +1,8 @@
-{{! vim:set filetype=rst: }}
 =====
  mst
 =====
+
+.. {{! vim:set filetype=rst: }}vim: ro noma
 
 A rather small CLI file templating tool written in C++. Specifically designed to handle dotfiles
 (see: `kgadek/yadm-bin <https://github.com/kgadek/yadm-bin>`_ - a yadm with ``mst`` templating).

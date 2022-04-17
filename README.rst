@@ -2,6 +2,8 @@
  mst
 =====
 
+.. vim: ro noma
+
 A rather small CLI file templating tool written in C++. Specifically designed to handle dotfiles
 (see: `kgadek/yadm-bin <https://github.com/kgadek/yadm-bin>`_ - a yadm with ``mst`` templating).
 
@@ -20,9 +22,9 @@ Standing on a shoulders of a wonderful `no1msd/mstch <https://github.com/no1msd/
    ===============================================================================
     CMake                   1           29           20            3            6
     C++                     1           68           59            6            3
-    ReStructuredText        1           48           31            0           17
+    ReStructuredText        1           49           31            0           18
    ===============================================================================
-    Total                   3          145          110            9           26
+    Total                   3          146          110            9           27
    ===============================================================================
 
 
