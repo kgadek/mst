@@ -1,3 +1,4 @@
+{{! vim:set filetype=rst: }}
 =====
  mst
 =====
@@ -15,16 +16,7 @@ Standing on a shoulders of a wonderful `no1msd/mstch <https://github.com/no1msd/
 .. code-block:: console
 
    konrad@pc mst$ tokei .
-   ===============================================================================
-    Language            Files        Lines         Code     Comments       Blanks
-   ===============================================================================
-    CMake                   1           29           20            3            6
-    C++                     1           68           59            6            3
-    ReStructuredText        1           48           31            0           17
-   ===============================================================================
-    Total                   3          145          110            9           26
-   ===============================================================================
-
+{{#cmd}}tokei . | sed 's/^/   /g'{{/cmd}}
 
 Notes
 =====
