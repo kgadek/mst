@@ -46,6 +46,12 @@ int main(int argc, char* argv[]) {
            return stdout;
          }}},
 #endif
+        {"maybe_env", mstch::lambda{[](const string& env_var_name) -> mstch::node {
+           if (char* env_var_value = getenv(env_var_name.c_str())) {
+             return string{env_var_value};
+           }
+           return std::string{};
+         }}},
         {"env", mstch::lambda{[](const string& env_var_name) -> mstch::node {
            if (char* env_var_value = getenv(env_var_name.c_str())) {
              return string{env_var_value};
