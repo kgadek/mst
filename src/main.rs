@@ -15,15 +15,16 @@ where
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
-    let args: Vec<_> = env::args().skip(1).collect(); // args without binary name
-    let source_path = args
-        .first()
-        .ok_or("first argument needs to be a file path")?;
-    let template = mustache::compile_path(source_path)?;
+    let all_args: Vec<String> = env::args().skip(1).collect();
+    let (source_path, kv_args) = all_args
+        .split_first()
+        .ok_or("Requires at least 1 argument: path to template file")?;
+
+    let template = mustache::compile_path(&source_path)?;
 
     let data = {
         let mut data = MapBuilder::new();
-        for (k, v) in pairs(args.iter().skip(1)) {
+        for (k, v) in pairs(kv_args.iter()) {
             data = data.insert_str(k, v);
         }
 
