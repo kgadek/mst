@@ -47,3 +47,4 @@ When uploading to GitHub:
 To update ``README.rst`` run::
 
     mst README.mst.rst > README.rst
+

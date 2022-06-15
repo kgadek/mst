@@ -3,6 +3,7 @@ extern crate mustache;
 use mustache::MapBuilder;
 use std::env;
 use std::error::Error;
+use std::fs;
 use std::io;
 
 fn pairs<I>(data: I) -> impl Iterator<Item = (I::Item, I::Item)>
@@ -28,9 +29,13 @@ fn main() -> Result<(), Box<dyn Error>> {
             data = data.insert_str(k, v);
         }
 
-        data = data.insert_str("MST_SOURCE", source_path);
+        data = data
+            .insert_str("MST_SOURCE", source_path)
+            .insert_fn("include", move |filename| {
+                fs::read_to_string(&filename)
+                    .unwrap_or_else(|err| panic!("Can't read file {:?}: {:?}", filename, err))
+            });
 
-        // TODO: include (flag)
         // TODO: cmd (flag)
         // TODO: maybe_env
         // TODO: env
