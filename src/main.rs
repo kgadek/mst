@@ -21,7 +21,8 @@ fn main() -> Result<(), Box<dyn Error>> {
         .split_first()
         .ok_or("Requires at least 1 argument: path to template file")?;
 
-    let template = mustache::compile_path(&source_path)?;
+    let template = mustache::compile_path(&source_path)
+        .unwrap_or_else(|err| panic!("Can't compile template: {:?}", err));
 
     let data = {
         let mut data = MapBuilder::new();
@@ -43,6 +44,8 @@ fn main() -> Result<(), Box<dyn Error>> {
         data.build()
     };
 
-    template.render_data(&mut io::stdout(), &data)?;
+    template
+        .render_data(&mut io::stdout(), &data)
+        .unwrap_or_else(|err| panic!("Can't render data: {:?}", err));
     Ok(())
 }
