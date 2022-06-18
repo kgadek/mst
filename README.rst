@@ -20,11 +20,10 @@ Standing on a shoulders of a wonderful `no1msd/mstch <https://github.com/no1msd/
    ===============================================================================
     Language            Files        Lines         Code     Comments       Blanks
    ===============================================================================
-    CMake                   1           29           20            3            6
-    C++                     1           68           59            6            3
-    ReStructuredText        1           49           31            0           18
+    Rust                    1           76           67            0            9
+    TOML                    1           11            9            0            2
    ===============================================================================
-    Total                   3          146          110            9           27
+    Total                   2           87           76            0           11
    ===============================================================================
 
 
@@ -56,3 +55,4 @@ When uploading to GitHub:
 To update ``README.rst`` run::
 
     mst README.mst.rst > README.rst
+

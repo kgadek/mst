@@ -3,5 +3,9 @@ name = "mst"
 version = "0.1.0"
 edition = "2021"
 
+[features]
+with_include = []
+with_cmd = []
+
 [dependencies]
 mustache = "0.9.0"
