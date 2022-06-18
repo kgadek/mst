@@ -55,13 +55,13 @@ fn main() -> Result<(), Box<dyn Error>> {
                     .unwrap_or_else(|err| panic!("cmd: Can't run {:?}: {:?}", cmd, err));
                 if output.status.success() {
                     String::from_utf8(output.stdout).unwrap_or_else(|err| {
-                        panic!("cmd: can't decode stdout of {:?}: {:?}", cmd, err)
+                        panic!("cmd: Can't decode stdout of {:?}: {:?}", cmd, err)
                     })
                 } else {
-                    let exitcode = output
-                        .status
-                        .code()
-                        .map_or("killed by signal".to_string(), |x| x.to_string());
+                    let exitcode = output.status.code().map_or(
+                        "process killed by some signal, no return code".to_string(),
+                        |x| x.to_string(),
+                    );
                     panic!("cmd: Execution error of {:?}: {:?}", cmd, exitcode)
                 }
             });
