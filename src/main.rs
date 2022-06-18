@@ -22,10 +22,10 @@ fn main() -> Result<(), Box<dyn Error>> {
         .split_first()
         .ok_or("mst: Requires at least 1 argument: path to template file")?;
 
-    let template = mustache::compile_path(&source_path)
+    let template: mustache::Template = mustache::compile_path(&source_path)
         .unwrap_or_else(|err| panic!("mustache: Can't compile template: {:?}", err));
 
-    let data = {
+    let data: mustache::Data = {
         let mut data = MapBuilder::new();
         for (k, v) in pairs(kv_args.iter()) {
             data = data.insert_str(k, v);
@@ -55,7 +55,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                     .unwrap_or_else(|err| panic!("cmd: Can't run {:?}: {:?}", cmd, err));
                 if output.status.success() {
                     String::from_utf8(output.stdout).unwrap_or_else(|err| {
-                        panic!("cmd: can't decode stdout of {:?}: {:?}", &cmd, err)
+                        panic!("cmd: can't decode stdout of {:?}: {:?}", cmd, err)
                     })
                 } else {
                     let exitcode = output
