@@ -2,7 +2,7 @@
  mst
 =====
 
-.. vim: ro noma
+.. {{! vim:set filetype=rst: }}vim: ro noma
 
 A rather small CLI file templating tool written in Rust. Specifically designed to handle dotfiles
 (see: `kgadek/yadm-bin <https://github.com/kgadek/yadm-bin>`_ - a yadm with ``mst`` templating).
@@ -15,15 +15,7 @@ A rather small CLI file templating tool written in Rust. Specifically designed t
 .. code-block:: console
 
    konrad@pc mst$ tokei .
-   ===============================================================================
-    Language            Files        Lines         Code     Comments       Blanks
-   ===============================================================================
-    Rust                    1           76           67            0            9
-    TOML                    1           11            9            0            2
-   ===============================================================================
-    Total                   2           87           76            0           11
-   ===============================================================================
-
+{{#cmd}}tokei . | sed 's/^/   /g'{{/cmd}}
 
 Notes
 =====
